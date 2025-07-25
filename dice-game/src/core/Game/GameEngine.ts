@@ -15,7 +15,6 @@ export class GameEngine {
 
   async startGame(): Promise<void> {
     const first = await this.determineFirstPlayer();
-
     let userDiceIndex: number;
     let computerDiceIndex: number;
 

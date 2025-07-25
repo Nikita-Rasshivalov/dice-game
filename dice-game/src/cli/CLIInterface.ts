@@ -44,12 +44,15 @@ export class CLIInterface {
         message: "Enter all dice (space-separated):",
       });
 
-      if (!response.input || response.input.trim() === "") {
-        console.log("No input provided. Exiting.");
-        return;
+      const input = response.input?.trim();
+
+      if (!input) {
+        console.log("No input provided. Please try again.");
+        continue;
       }
 
-      const diceStrings = response.input.trim().split(/\s+/);
+      const diceStrings = input.split(/\s+/);
+
       if (diceStrings.length < MIN_DICE_COUNT) {
         console.log(`Please enter at least ${MIN_DICE_COUNT} dice.`);
         continue;

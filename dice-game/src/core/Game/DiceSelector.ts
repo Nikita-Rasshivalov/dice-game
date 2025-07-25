@@ -13,7 +13,12 @@ export class DiceSelector {
   }
 
   async selectUserDice(excludeIndex: number = -1): Promise<number> {
+    if (this.diceList.length === 0) {
+      throw new Error("No dice available to select.");
+    }
+
     this.printDiceOptions();
+
     while (true) {
       const choice = await UserInputHelper.promptNumber(
         `Select your dice (1-${this.diceList.length}):`,
@@ -31,6 +36,10 @@ export class DiceSelector {
     const available = this.diceList
       .map((_, idx) => idx)
       .filter((i) => i !== excludeIndex);
+
+    if (available.length === 0) {
+      throw new Error("No dice available for computer to select.");
+    }
 
     const protocol = new FairRandomProtocol(available.length);
     const hmac = protocol.prepare();

@@ -1,6 +1,30 @@
 import prompts from "prompts";
+import { Utils } from "../../Utils";
 
 export class UserInputHelper {
+  private static validateIntegerInput(
+    value: string,
+    min: number,
+    max: number
+  ): true | string {
+    if (Utils.isEmpty(value)) {
+      return "Input cannot be empty.";
+    }
+
+    const num = Number(value);
+    if (!Number.isInteger(num) || num < min || num > max) {
+      return `Please enter an integer between ${min} and ${max}.`;
+    }
+    return true;
+  }
+
+  private static validateBit(value: string): true | string {
+    if (Utils.isEmpty(value)) {
+      return "Input cannot be empty.";
+    }
+    return value === "0" || value === "1" ? true : "Please enter 0 or 1.";
+  }
+
   static async promptNumber(
     message: string,
     min: number,
@@ -8,21 +32,23 @@ export class UserInputHelper {
   ): Promise<number> {
     while (true) {
       const response = await prompts({
-        type: "number",
+        type: "text",
         name: "number",
         message,
-        validate: (value) =>
-          Number.isInteger(value) && value >= min && value <= max
-            ? true
-            : `Please enter a number between ${min} and ${max}`,
+        validate: (value) => this.validateIntegerInput(value, min, max),
       });
 
-      if (response.number === undefined) {
-        console.log("Input cancelled.");
-        process.exit(1);
+      const input = response.number;
+
+      if (Utils.isEmpty(input)) {
+        console.log("You entered nothing. Please try again.");
+        continue;
       }
 
-      return response.number;
+      const parsed = parseInt(input, 10);
+      if (!Number.isNaN(parsed)) return parsed;
+
+      console.log("Invalid input. Please try again.");
     }
   }
 
@@ -32,18 +58,21 @@ export class UserInputHelper {
         type: "text",
         name: "bit",
         message,
-        validate: (value) =>
-          value === "0" || value === "1" ? true : "Please enter 0 or 1",
+        validate: (value) => this.validateBit(value),
       });
 
-      if (response.bit === undefined) {
-        console.log("Input cancelled.");
-        process.exit(1);
+      const input = response.bit;
+
+      if (Utils.isEmpty(input)) {
+        console.log("You entered nothing. Please try again.");
+        continue;
       }
 
-      if (response.bit === "0" || response.bit === "1") {
-        return parseInt(response.bit, 10);
+      if (input === "0" || input === "1") {
+        return parseInt(input, 10);
       }
+
+      console.log("Invalid input. Please try again.");
     }
   }
 
@@ -57,6 +86,7 @@ export class UserInputHelper {
       message,
       initial,
     });
+
     return response.value === true;
   }
 }
