@@ -32,23 +32,23 @@ export class UserInputHelper {
   ): Promise<number> {
     while (true) {
       const response = await prompts({
-        type: "text",
+        type: "number",
         name: "number",
         message,
-        validate: (value) => this.validateIntegerInput(value, min, max),
+        validate: (value) =>
+          Number.isInteger(value) && value >= min && value <= max
+            ? true
+            : `Please enter a number between ${min} and ${max}`,
       });
 
       const input = response.number;
 
-      if (Utils.isEmpty(input)) {
-        console.log("You entered nothing. Please try again.");
+      if (input === undefined || input === null || isNaN(input)) {
+        console.log("No valid input provided. Please try again.");
         continue;
       }
 
-      const parsed = parseInt(input, 10);
-      if (!Number.isNaN(parsed)) return parsed;
-
-      console.log("Invalid input. Please try again.");
+      return input;
     }
   }
 

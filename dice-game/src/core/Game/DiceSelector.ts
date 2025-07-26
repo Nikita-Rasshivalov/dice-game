@@ -48,7 +48,7 @@ export class DiceSelector {
     const userInput = await UserInputHelper.promptNumber(
       `Enter your number (0 to ${
         available.length - 1
-      }) to participate in fair selection:`,
+      }) to help with fair selection:`,
       0,
       available.length - 1
     );

@@ -29,15 +29,21 @@ export class DiceRoller {
     const hmac = protocol.prepare();
     console.log(`Computer prepared roll (HMAC): ${hmac}`);
 
-    const computerNumber = Math.floor(Math.random() * dice.getSides());
-    console.log(`Computer randomly chose number (hidden): ${computerNumber}`);
+    const userInput = await UserInputHelper.promptNumber(
+      `Enter your number (0 to ${
+        dice.getSides() - 1
+      }) to participate in computer's roll:`,
+      0,
+      dice.getSides() - 1
+    );
 
-    const result = protocol.reveal(computerNumber);
-    console.log(`Computer secret revealed: ${result.secret}`);
+    const result = protocol.reveal(userInput);
+    console.log(`Computer number: ${result.computerNumber}`);
+    console.log(`Secret: ${result.secret}`);
     console.log(`Final index (mod sum): ${result.result}`);
 
     const value = dice.getValueAt(result.result);
-    console.log(`Rolled value: ${value}`);
+    console.log(`Rolled value (for computer): ${value}`);
 
     return value;
   }
